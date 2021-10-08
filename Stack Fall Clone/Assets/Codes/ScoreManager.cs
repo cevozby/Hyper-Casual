@@ -8,12 +8,15 @@ public class ScoreManager : MonoBehaviour
     public static ScoreManager intance;
 
     public int score;
+    public static int totalScore;
     public Text scoreTXT;
+    private PlayerController player;
 
     private void Awake()
     {
         makeSingleton();
         scoreTXT = GameObject.Find("ScoreText").GetComponent<Text>();
+        //maxScoreTXT = GameObject.Find("MaxScoreText").GetComponent<Text>();
     }
 
 
@@ -21,6 +24,9 @@ public class ScoreManager : MonoBehaviour
     void Start()
     {
         addScore(0);
+        //scoreTXT = GameObject.Find("ScoreText").GetComponent<Text>();
+        //gameOverScoreText = GameObject.Find("GameOverScoreText").GetComponent<Text>();
+        //maxScoreTXT = GameObject.Find("MaxScoreText").GetComponent<Text>();
     }
 
 
@@ -31,6 +37,12 @@ public class ScoreManager : MonoBehaviour
         {
             scoreTXT = GameObject.Find("ScoreText").GetComponent<Text>();
         }
+        //scoreTXT.text = score.ToString();
+        
+        //maxScoreTXT.text = PlayerPrefs.GetInt("HighScore").ToString();
+        
+            
+        
     }
 
     public void addScore(int value)
@@ -40,9 +52,11 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Score = " + score);
         if (score > PlayerPrefs.GetInt("HighScore", 0))
         {
+            
             PlayerPrefs.SetInt("HighScore", score);
         }
         scoreTXT.text = score.ToString();
+        totalScore = score;
     }
 
     void makeSingleton()

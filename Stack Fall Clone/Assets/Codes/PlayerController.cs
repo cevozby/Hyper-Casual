@@ -24,6 +24,9 @@ public class PlayerController : MonoBehaviour
     public GameObject InvictableOBJ;
 
     public GameObject finishUI, gameOverUI;
+    private bool totalObstacleNumberCheck;
+
+    public Text gameOverScoreText, maxScoreText;
 
     public enum PlayerState
     {
@@ -38,8 +41,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        totalObstacleNumber = LevelSpawner.tON;
-        //totalObstacleNumber = FindObjectsOfType<ObstacleController>().Length;
+        //totalObstacleNumber = LevelSpawner.tON;
+        totalObstacleNumberCheck = true;
 
     }
 
@@ -47,13 +50,20 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         currentObstacleNumber = 0;
+        
     }
 
 
 
     void Update()
     {
-        totalObstacleNumber = LevelSpawner.tON;
+        //totalObstacleNumber = LevelSpawner.tON;
+        if (totalObstacleNumberCheck == true)
+        {
+            totalObstacleNumber = FindObjectsOfType<ObstacleController>().Length;
+            totalObstacleNumberCheck = false;
+        }
+        
         if (playerstate == PlayerState.Playing)
         {
             if (Input.GetMouseButtonDown(0))
@@ -117,19 +127,22 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        /*if (playerstate == PlayerState.Prepare)
-        {
-            if (Input.GetMouseButton(0))
-            {
-                playerstate = PlayerState.Playing;
-            }
-        }*/
+        
         if (playerstate == PlayerState.Finish)
         {
-            //if (Input.GetMouseButtonDown(0))
-            //{
-                FindObjectOfType<LevelSpawner>().NextLevel();
-            //}
+            FindObjectOfType<LevelSpawner>().NextLevel();
+        }
+        if (playerstate == PlayerState.Died)
+        {
+            gameOverScoreText.text = "Score: " + ScoreManager.totalScore.ToString();
+            maxScoreText.text = "Max Score: " + PlayerPrefs.GetInt("HighScore").ToString();
+            if (Input.GetMouseButtonDown(0))
+            {
+                FindObjectOfType<LevelSpawner>().SameLevel();
+                RotateManager.speed = 100f;
+                ScoreManager.totalScore = 0;
+            }
+            
         }
         
     }
@@ -178,9 +191,9 @@ public class PlayerController : MonoBehaviour
                 }
                 else if (collision.gameObject.tag == "plane")
                 {
-                    Debug.Log("Game Over");
                     gameOverUI.SetActive(true);
-                    playerstate = PlayerState.Finish;
+                    playerstate = PlayerState.Died;
+                    RotateManager.speed = 0f;
                     gameObject.GetComponent<Rigidbody>().isKinematic = true;
                     ScoreManager.intance.ResetScore();
                     SoundManager.instance.playSoundFX(death, 0.5f);

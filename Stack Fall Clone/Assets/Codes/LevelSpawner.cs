@@ -81,18 +81,27 @@ public class LevelSpawner : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            planeMaterial.color = Random.ColorHSV(0, 1, 0.5f, 1, 1, 1);
-            baseMaterial.color = planeMaterial.color + Color.gray;
-            playerMeshRenderer.material.color = baseMaterial.color;
-        }
+        
     }
 
     public void NextLevel()
     {
         PlayerPrefs.SetInt("Level", PlayerPrefs.GetInt("Level") + 1);
         SceneManager.LoadScene(0);
+        ChanceColor();
+    }
+
+    public void SameLevel()
+    {
+        PlayerPrefs.SetInt("Level", PlayerPrefs.GetInt("Level"));
+        SceneManager.LoadScene(0);
+    }
+
+    public void ChanceColor()
+    {
+        planeMaterial.color = Random.ColorHSV(0, 1, 0.5f, 1, 1, 1);
+        baseMaterial.color = planeMaterial.color + Color.gray;
+        playerMeshRenderer.material.color = baseMaterial.color;
     }
 
     public void randomObstacleGenerator()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class GameUI : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class GameUI : MonoBehaviour
     private PlayerController player;
 
     public GameObject homeUI, gameUI;
+
+    public GameObject restartBttn;
+    public GameObject playText, continueText, resetText;
+    public bool resetClick = false;
+    public int resetScene=0;
 
     void Start()
     {
@@ -52,14 +58,33 @@ public class GameUI : MonoBehaviour
         if(Input.GetMouseButtonDown(0) && !ignoreUI() && player.playerstate == PlayerController.PlayerState.Prepare)
         {
             player.playerstate = PlayerController.PlayerState.Playing;
-            homeUI.SetActive(false);
+            playText.SetActive(false);
+            continueText.SetActive(false);
+            resetText.SetActive(false);
             gameUI.SetActive(true);
-
-
         }
 
+        if (Input.GetMouseButtonDown(0) && ignoreUI() && player.playerstate == PlayerController.PlayerState.Playing)
+        {
+            player.playerstate = PlayerController.PlayerState.Prepare;
+            continueText.SetActive(true);
+        }
 
-        if (SoundManager.instance.sound)
+        if (resetScene==1 && resetClick == true)
+        {
+            resetScene = 0;
+            PlayerPrefs.DeleteAll();
+            SceneManager.LoadScene(0);
+            Time.timeScale = 1;
+        }
+        else if(resetScene==2 && resetClick==false)
+        {
+            resetText.SetActive(false);
+            resetScene = 0;
+            Time.timeScale = 1;
+        }
+
+            if (SoundManager.instance.sound)
         {
             soundOnButton.SetActive(true);
             soundOffButton.SetActive(false);
@@ -69,6 +94,12 @@ public class GameUI : MonoBehaviour
             soundOnButton.SetActive(false);
             soundOffButton.SetActive(true);
         }
+        /*if (resetClick==true && Input.GetMouseButtonDown(0))
+        {
+            
+             
+            
+        }*/
     }
 
     private bool ignoreUI()
@@ -100,5 +131,25 @@ public class GameUI : MonoBehaviour
     {
         buttonSettingBool = !buttonSettingBool;
         soundButtons.SetActive(buttonSettingBool);
+    }
+
+    public void resetGame()
+    {
+        resetText.SetActive(true);
+        
+        Time.timeScale = 0;
+
+    }
+
+    public void acceptButton()
+    {
+        resetClick = true;
+        resetScene = 1;
+    }
+
+    public void refuseButton()
+    {
+        resetClick = false;
+        resetScene = 2;
     }
 }
